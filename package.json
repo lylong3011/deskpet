@@ -1,0 +1,67 @@
+{
+  "name": "deskpet",
+  "productName": "DeskPet",
+  "version": "0.2.1",
+  "description": "AI 桌面宠物：用你自己的图像模型生成专属形象，会呼吸、会卖萌、会陪你说话",
+  "main": "electron/main.js",
+  "author": "lylong3011",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/",
+    "gen:assets": "node scripts/gen-assets.js",
+    "dist": "electron-builder --win",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "39.2.7",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.deskpet.app",
+    "productName": "DeskPet",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "renderer/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "DeskPet 桌宠"
+    },
+    "portable": {
+      "artifactName": "DeskPet-${version}-portable.exe"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lylong3011/deskpet.git"
+  }
+}

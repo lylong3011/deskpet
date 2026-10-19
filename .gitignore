@@ -1,0 +1,17 @@
+node_modules/
+dist/
+out/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+*.local
+deskpet-*.nsis.7z
+builder-debug.yml
+keyprobe.js
+probe*.js
+docs/
+.release-notes.md
+patch.json
+rel_body*.json

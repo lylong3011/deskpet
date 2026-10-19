@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+<title>DeskPet 设置</title>
+<link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <img src="../../assets/icon.png" alt="" />
+      <div class="brand-txt">
+        <b>DeskPet</b>
+        <span>桌面小跟班</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-tab="look">形象与外观</button>
+      <button class="nav-item" data-tab="remind">提醒</button>
+      <button class="nav-item" data-tab="smart">智能对话</button>
+      <button class="nav-item" data-tab="general">通用</button>
+      <button class="nav-item" data-tab="about">关于</button>
+    </nav>
+
+    <div class="petcard">
+      <div class="petcard-top">
+        <div class="avatar"><img id="side-avatar" alt="" /></div>
+        <div class="petcard-meta">
+          <b id="side-name">小家伙</b>
+          <span id="side-level">Lv.1</span>
+        </div>
+      </div>
+      <div class="drives" id="side-drives"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1 id="page-title">形象与外观</h1>
+      <div class="top-actions">
+        <button class="btn ghost" id="btn-say">让桌宠说句话</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- ================= 形象与外观 ================= -->
+      <section class="panel active" data-panel="look">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>当前形象</h2>
+              <p class="hint">上传一张正脸照片，会生成专属 Q 版形象。</p>
+            </div>
+          </div>
+          <div class="current">
+            <div class="current-preview"><img id="current-img" alt="" /></div>
+            <div class="current-info">
+              <div class="field-inline">
+                <label>名字</label>
+                <input id="pet-name" class="input" maxlength="12" placeholder="给 TA 起个名字" />
+                <button class="btn" id="btn-save-name">保存</button>
+              </div>
+              <div class="row-actions">
+                <button class="btn primary" id="btn-open-wizard">上传照片生成新形象</button>
+              </div>
+              <p class="hint" id="char-source"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>形象生成平台</h2>
+              <p class="hint">Key 仅保存在本机（系统加密），不会上传到我们的服务器。</p>
+            </div>
+            <span class="tag" id="key-status">未配置</span>
+          </div>
+
+          <div class="providers" id="providers"></div>
+
+          <div class="grid2">
+            <div class="field">
+              <label>API Key</label>
+              <input id="api-key" class="input" type="password" placeholder="粘贴你的 API Key" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label>Base URL（可选，留空用默认）</label>
+              <input id="base-url" class="input" placeholder="https://your-host/v1" />
+              <span class="hint">只填域名也行，程序会自动补 /v1；路径不是 /v1 的平台请填完整</span>
+            </div>
+            <div class="field">
+              <label>图像模型（可选）</label>
+              <input id="image-model" class="input" placeholder="留空使用平台默认" />
+            </div>
+            <div class="field">
+              <label>对话模型（可选，用于 AI 对话）</label>
+              <input id="chat-model" class="input" placeholder="留空使用平台默认" />
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button class="btn primary" id="btn-save-provider">保存配置</button>
+            <button class="btn ghost" id="btn-test-provider">测试连接</button>
+            <span class="hint" id="provider-msg"></span>
+          </div>
+          <p class="hint" id="provider-diag"></p>
+          <p class="hint warn-line hidden" id="provider-warn"></p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>我的形象库</h2>
+              <p class="hint">生成过的形象都会保存在这里，可以随时切换。</p>
+            </div>
+          </div>
+          <div class="gallery" id="gallery"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>随身道具</h2>
+              <p class="hint">点一下切换携带；也能用 AI 按描述生成新道具（自动抠白底，存到本地）</p>
+            </div>
+          </div>
+          <div class="props-grid" id="props-grid"></div>
+          <div class="field mt">
+            <label>生成新道具</label>
+            <div class="row-actions">
+              <input class="input" id="prop-prompt" maxlength="60" placeholder="例如：一杯珍珠奶茶 / 一把小雨伞" />
+              <button class="btn primary" id="btn-gen-prop">生成</button>
+            </div>
+            <p class="hint" id="prop-msg"></p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= 提醒 ================= -->
+      <section class="panel" data-panel="remind">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>定时提醒</h2>
+              <p class="hint">每次提醒的间隔会在区间内随机，避免变成机械闹钟。</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="remind-enabled" checked /><span></span></label>
+          </div>
+
+          <div class="remind-row" data-kind="water">
+            <div class="remind-name">💧 喝水</div>
+            <label class="switch sm"><input type="checkbox" data-r="water.enabled" checked /><span></span></label>
+            <div class="range">
+              <input class="input num" type="number" min="5" max="240" data-r="water.min" />
+              <span>—</span>
+              <input class="input num" type="number" min="5" max="240" data-r="water.max" />
+              <span class="unit">分钟</span>
+            </div>
+            <button class="btn tiny ghost" data-test="water">试一下</button>
+          </div>
+
+          <div class="remind-row" data-kind="meal">
+            <div class="remind-name">🍚 吃饭</div>
+            <label class="switch sm"><input type="checkbox" data-r="meal.enabled" checked /><span></span></label>
+            <div class="range">
+              <input class="input num" type="number" min="30" max="480" data-r="meal.min" />
+              <span>—</span>
+              <input class="input num" type="number" min="30" max="480" data-r="meal.max" />
+              <span class="unit">分钟</span>
+            </div>
+            <button class="btn tiny ghost" data-test="meal">试一下</button>
+          </div>
+
+          <div class="remind-row" data-kind="stretch">
+            <div class="remind-name">🧘 起身活动</div>
+            <label class="switch sm"><input type="checkbox" data-r="stretch.enabled" checked /><span></span></label>
+            <div class="range">
+              <input class="input num" type="number" min="10" max="240" data-r="stretch.min" />
+              <span>—</span>
+              <input class="input num" type="number" min="10" max="240" data-r="stretch.max" />
+              <span class="unit">分钟</span>
+            </div>
+            <button class="btn tiny ghost" data-test="stretch">试一下</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="grid2">
+            <div class="field">
+              <label>每日最多提醒次数</label>
+              <input class="input num" type="number" min="1" max="40" id="max-reminders" />
+            </div>
+            <div class="field">
+              <label>提醒方式</label>
+              <div class="check-line">
+                <label class="check"><input type="checkbox" id="opt-sound" /> 提示音</label>
+                <label class="check"><input type="checkbox" id="opt-notify" /> 系统通知</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>免打扰</h2>
+              <p class="hint">静音时段内不会弹任何提醒，桌宠也会自己安静待着。</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="quiet-enabled" /><span></span></label>
+          </div>
+          <div class="grid2">
+            <div class="field">
+              <label>静音开始</label>
+              <input class="input" type="time" id="quiet-start" />
+            </div>
+            <div class="field">
+              <label>静音结束</label>
+              <input class="input" type="time" id="quiet-end" />
+            </div>
+          </div>
+          <div class="check-line mt">
+            <label class="check"><input type="checkbox" id="opt-dnd" /> 现在开启勿扰（临时）</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 智能对话 ================= -->
+      <section class="panel" data-panel="smart">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>AI 自由对话</h2>
+              <p class="hint">开启后，右键桌宠选「说句话」或双击它，就能聊天。用按钮随时开关。</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="opt-ai" /><span></span></label>
+          </div>
+          <div class="note">
+            对话使用上面「形象生成平台」里配置的同一个 Key 与模型。若提示模型不可用，请在形象页填写「对话模型」。
+          </div>
+          <div class="grid2 mt">
+            <div class="field">
+              <label>宠物的性格设定</label>
+              <textarea class="input" id="pet-persona" rows="3" placeholder="例如：话少但很黏人，喜欢用短句"></textarea>
+            </div>
+          </div>
+          <div class="row-actions">
+            <button class="btn primary" id="btn-save-persona">保存设定</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><h2>情绪与成长</h2><p class="hint">和它互动会让它长大，等级越高台词越丰富。</p></div></div>
+          <div class="drives big" id="drives-big"></div>
+        </div>
+      </section>
+
+      <!-- ================= 通用 ================= -->
+      <section class="panel" data-panel="general">
+        <div class="card">
+          <div class="card-head"><div><h2>外观与行为</h2></div></div>
+          <div class="field">
+            <label>桌宠大小 <span class="hint" id="scale-val">100%</span></label>
+            <input type="range" id="opt-scale" min="70" max="160" step="5" />
+          </div>
+          <div class="check-line mt">
+            <label class="check"><input type="checkbox" id="opt-top" /> 始终置顶</label>
+            <label class="check"><input type="checkbox" id="opt-autostart" /> 开机自动启动</label>
+          </div>
+          <div class="check-line mt">
+            <label class="check"><input type="checkbox" id="opt-proactive" /> 主动来找我互动</label>
+            <span class="hint">关闭后它只会安静待着、自己玩，不再主动搭话讨陪伴</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><h2>数据与隐私</h2><p class="hint">照片只在生成本地处理，生成结果保存在你自己的电脑上。</p></div></div>
+          <div class="row-actions">
+            <button class="btn ghost" id="btn-data-dir">打开数据目录</button>
+            <button class="btn ghost" id="btn-reset-wizard">重新走一遍新手引导</button>
+            <button class="btn danger" id="btn-quit">退出桌宠</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 关于 ================= -->
+      <section class="panel" data-panel="about">
+        <div class="card">
+          <div class="card-head"><div><h2>DeskPet <span class="hint" id="ver"></span></h2></div></div>
+          <ul class="bullets">
+            <li><b>左键拖拽</b>：把桌宠挪到任意位置，松手会落到屏幕上。</li>
+            <li><b>单击</b>：摸摸它；<b>右键</b>：喂食 / 喝水 / 玩耍 / 聊天。</li>
+            <li><b>双击</b>：开启 AI 对话（需先在「智能对话」里打开开关）。</li>
+            <li><b>托盘图标</b>：显示隐藏、勿扰、开机自启、退出。</li>
+            <li>长时间没人陪时，它会自己溜达、玩球、打瞌睡。</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ================= 新手引导 ================= -->
+<div class="wizard hidden" id="wizard">
+  <div class="wizard-card">
+    <div class="wz-head">
+      <div class="dots" id="wz-dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <button class="icon-btn" id="wz-close" title="关闭">×</button>
+    </div>
+
+    <div class="wz-body">
+      <!-- 步骤 1：先配接口 -->
+      <div class="step active" data-step="1">
+        <h2>先接通 AI 接口</h2>
+        <p class="hint">生成形象要用到你自己的图像模型，先填好这里，后面上传照片才能出图。</p>
+        <div class="field">
+          <label>平台</label>
+          <div class="providers" id="wz-providers"></div>
+        </div>
+        <div class="field">
+          <label>Base URL</label>
+          <input class="input" id="wz-base-url" placeholder="https://your-host/v1" />
+          <span class="hint">只填域名会自动补 /v1</span>
+        </div>
+        <div class="field">
+          <label>图像模型</label>
+          <input class="input" id="wz-image-model" placeholder="例如 grok-imagine-image-2.0" />
+        </div>
+        <div class="field">
+          <label>对话模型（可选）</label>
+          <input class="input" id="wz-chat-model" placeholder="例如 deepseek-v4.1-flash" />
+        </div>
+        <div class="field">
+          <label>API Key</label>
+          <input class="input" id="wz-api-key" type="password" placeholder="粘贴你的 API Key" autocomplete="off" />
+        </div>
+        <div class="row-actions">
+          <button class="btn ghost" id="wz-test">测试连接</button>
+          <span class="hint" id="wz-test-msg"></span>
+        </div>
+      </div>
+
+      <!-- 步骤 2 -->
+      <div class="step" data-step="2">
+        <h2>给桌宠一张脸</h2>
+        <p class="hint">上传一张正脸、光线均匀的照片，生成效果最好。</p>
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept="image/*" hidden />
+          <div class="dz-icon">＋</div>
+          <b>点击选择照片</b>
+          <span>支持 jpg / png，也可以拖进来</span>
+        </label>
+      </div>
+
+      <!-- 步骤 3 -->
+      <div class="step" data-step="3">
+        <h2>调整裁剪与画风</h2>
+        <p class="hint">拖动画面调整位置，滚轮或滑块缩放，尽量让脸居中。</p>
+        <div class="crop-wrap">
+          <canvas id="crop-canvas" width="300" height="300"></canvas>
+        </div>
+        <div class="field">
+          <label>缩放</label>
+          <input type="range" id="crop-zoom" min="100" max="320" value="140" />
+        </div>
+        <div class="field">
+          <label>画风</label>
+          <div class="chips" id="style-chips"></div>
+        </div>
+        <div class="field">
+          <label>额外描述（可选）</label>
+          <input class="input" id="extra-prompt" placeholder="例如：戴圆框眼镜、蓝色卫衣" />
+        </div>
+      </div>
+
+      <!-- 步骤 4 -->
+      <div class="step" data-step="4">
+        <h2>正在生成</h2>
+        <p class="hint" id="gen-status">正在请求图像模型，通常 10–40 秒…</p>
+        <div class="gen-body">
+          <div class="spinner" id="gen-spinner"></div>
+          <div class="result-grid" id="result-grid"></div>
+        </div>
+      </div>
+
+      <!-- 步骤 5 -->
+      <div class="step" data-step="5">
+        <h2>给它起个名字</h2>
+        <p class="hint">名字会出现在气泡和对话里。</p>
+        <div class="final-preview"><img id="final-img" alt="" /></div>
+        <input class="input" id="final-name" maxlength="12" placeholder="比如：小八" value="小八" />
+      </div>
+    </div>
+
+    <div class="wz-foot">
+      <button class="btn ghost" id="wz-back">上一步</button>
+      <div class="spacer"></div>
+      <span class="hint" id="wz-tip"></span>
+      <button class="btn primary" id="wz-next">下一步</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="settings.js"></script>
+</body>
+</html>

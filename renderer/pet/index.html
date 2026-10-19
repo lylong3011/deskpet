@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data:; media-src 'self' file: data:; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+<title>DeskPet</title>
+<link rel="stylesheet" href="pet.css" />
+</head>
+<body>
+  <div id="stage">
+    <div id="chatbar" class="chatbar hidden">
+      <input id="chat-input" type="text" maxlength="200" placeholder="和我说说话…" autocomplete="off" />
+      <button id="chat-send" title="发送">↑</button>
+      <button id="chat-close" title="关闭 (Esc)">×</button>
+    </div>
+
+    <div id="bubble" class="bubble hidden">
+      <span id="bubble-text"></span>
+    </div>
+
+    <canvas id="pet"></canvas>
+
+    <div id="menu" class="menu hidden">
+      <button data-act="pet">摸摸头</button>
+      <button data-act="feed">喂点吃的</button>
+      <button data-act="water">喝口水</button>
+      <button data-act="play">陪它玩</button>
+      <div class="sep"></div>
+      <button data-act="chat">说句话</button>
+      <button data-act="settings">设置…</button>
+      <div class="sep"></div>
+      <button data-act="quit" class="danger">退出桌宠</button>
+    </div>
+  </div>
+  <script src="pet.js"></script>
+</body>
+</html>
